@@ -1,0 +1,84 @@
+package tool;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.channels.NonWritableChannelException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.TreeSet;
+
+import javax.management.RuntimeErrorException;
+import javax.print.attribute.standard.PrinterLocation;
+
+public class TextFile extends ArrayList<String> {
+	
+	
+    public TextFile(String filename,String splitter){
+    	super(Arrays.asList(read(filename).split(splitter)));
+    	if(get(0).equals(""))
+    		remove(0);
+    }
+    public TextFile(String filename){
+    	this(filename, "\n");
+    }
+    
+	public static String read(String filename){
+		StringBuilder sb=new StringBuilder();
+		try{
+			BufferedReader in=new BufferedReader(new FileReader(
+					new File(filename).getAbsoluteFile()));
+			try {
+				String s;
+				while((s=in.readLine())!=null){
+					sb.append(s);
+					sb.append("\n");
+				}
+			} finally {
+				in.close();// TODO: handle exception
+			}
+			
+		}catch(IOException e){
+			throw new RuntimeException(e);
+		}
+		return sb.toString();
+	}
+	
+	public static void write(String filename,String text){
+		try {
+			PrintWriter out=new PrintWriter(new File(filename).getAbsoluteFile());
+			try{
+				out.print(text);
+				
+			}finally{
+				out.close();
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+	public void write(String filename){
+		try {
+			PrintWriter out=new PrintWriter(new File(filename).getAbsoluteFile());
+			try {
+				for(String item:this){
+					out.println(item);
+				}
+			} finally {
+				out.close();// TODO: handle finally clause
+			}
+		} catch ( IOException e){
+			throw new RuntimeException(e);// TODO: handle exception
+		}
+	}
+	public static void main(String[] args) {
+		String file=read("E:/forjava/Think in java/src/tool/TextFile.java");
+		write("test.txt", file);
+		TextFile textFile=new TextFile("test.txt");
+		textFile.write("test2.txt");
+		TreeSet<String> words=new TreeSet<String>(new TextFile("E:/forjava/Think in java/src/tool/TextFile.java","\\W+"));
+		Print.println(words.headSet("a"));
+	}
+}
